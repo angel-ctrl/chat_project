@@ -10,10 +10,11 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/sql_chat/handlers"
 	"github.com/sql_chat/models"
+	"github.com/sql_chat/redis"
 )
 
 const (
-	pongWait = 30 * time.Second
+	pongWait = 5 * time.Second
 
 	pingPeriod = (pongWait * 9) / 10
 
@@ -36,14 +37,51 @@ func NewClient(id string, name string, conn *websocket.Conn) *Client {
 
 func (u *Client) warnfriendsAndMe() []models.Users {
 
-	id, _ := strconv.Atoi(u.UserID)
-
-	friends, err := handlers.UserUseCase.LookFriends(id)
+	val, err := redis.Get(u.Username)
 
 	if err != nil {
-		log.Println(err)
-		return nil
+
+		fmt.Println("error ", err.Error())
+
+		id, _ := strconv.Atoi(u.UserID)
+
+		friends, err := handlers.UserUseCase.LookFriends(id)
+
+		if err != nil {
+			log.Println(err)
+			return nil
+		}
+
+		userConecteds := u.verifyUserConecteds(friends)
+
+		err = redis.Set(u.Username, friends, 30*time.Second)
+
+		if err != nil {
+
+			log.Println(err)
+
+		}
+
+		return userConecteds
+
+	} else {
+
+		fmt.Println("si estaba en redis")
+
+		var friends []models.Users
+
+		err = json.Unmarshal([]byte(val.(string)), &friends)
+
+		if err != nil {
+			log.Println(err)
+		}
+
+		return u.verifyUserConecteds(friends)
+
 	}
+}
+
+func (u *Client) verifyUserConecteds(friends []models.Users) []models.Users {
 
 	var userConecteds []models.Users
 
@@ -90,8 +128,8 @@ func (u *Client) OnLine() {
 
 	for {
 
-		if _, message, err := u.Connection.ReadMessage(); err != nil { 
-			
+		if _, message, err := u.Connection.ReadMessage(); err != nil {
+
 			log.Println("Error on read message: ", err.Error())
 			pingTicker.Stop()
 			u.Connection.Close()
@@ -119,6 +157,8 @@ func (u *Client) aliveConection(pingTicker *time.Ticker) {
 
 		<-pingTicker.C
 
+		u.Connection.WriteMessage(websocket.BinaryMessage, []byte("{{"+"123123123  sdfbvsfgb"+"}}"))
+
 		if err := u.Connection.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
 			fmt.Println("ping: ", err)
 		}
@@ -129,14 +169,45 @@ func (u *Client) aliveConection(pingTicker *time.Ticker) {
 
 func (u *Client) DisconectUserAndFriends() error {
 
-	id, _ := strconv.Atoi(u.UserID)
-
-	friends, err := handlers.UserUseCase.LookFriends(id)
+	val, err := redis.Get(u.Username)
 
 	if err != nil {
-		log.Println(err)
-		return err
+
+		id, _ := strconv.Atoi(u.UserID)
+
+		friends, err := handlers.UserUseCase.LookFriends(id)
+
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+
+		u.DisconectUserOfFriends(friends)
+
+		return nil
+
+	} else {
+
+		fmt.Println("si estaba en redis")
+
+		var friends []models.Users
+
+		err = json.Unmarshal([]byte(val.(string)), &friends)
+
+		if err != nil {
+			log.Println(err)
+		}
+
+		u.DisconectUserOfFriends(friends)
+
+		return nil
+
 	}
+
+}
+
+
+func (u *Client) DisconectUserOfFriends(friends []models.Users) {
 
 	for _, element := range friends {
 
@@ -144,8 +215,6 @@ func (u *Client) DisconectUserAndFriends() error {
 			userCnn.Connection.WriteMessage(websocket.TextMessage, []byte("{{"+"Disconected:"+u.Username+"}}"))
 		}
 	}
-
-	return nil
 
 }
 
