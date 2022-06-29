@@ -135,8 +135,7 @@ func (e *UserRepoImpl) LookFriends_repo(id int) ([]models.Users, error) {
 	query := `SELECT usuarios.id, usuarios.username, usuarios.lastname
 			  FROM friends 
 			  inner join usuarios on friends.iduser2 = usuarios.Id or friends.iduser1 = usuarios.Id
-			  WHERE (friends.iduser2 = $1 or friends.iduser1 = $2) and usuarios.id != $3;`
-
+			  WHERE (friends.iduser2 = $1 or friends.iduser1 = $2) and usuarios.id != $3;` 
 
 	m, err := e.DB.Query(query, id, id, id)
 

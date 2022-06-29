@@ -14,6 +14,77 @@ import (
 
 func main() {
 
+	/*a := models.Message{
+		Id:              1,
+		UserSender:      "Juan",
+		Msg:             "Hola",
+		UserDestination: "gary",
+	}
+
+	p, _ := json.Marshal(a)
+
+	client.Set("key", p, 30*time.Second)*/
+
+	//a := []int{1, 2, 3}
+
+	//p, _ := json.Marshal(a)
+
+	/*t := 30*time.Second
+
+	client.Set("key", p, 30*time.Second)*/
+
+	/*val, err := client.Get("key").Result()
+	if err != nil {
+		fmt.Println("no existe papa")
+	}
+	fmt.Println("key: ", val)*/
+
+	/*a := models.Message{
+		Id:              1,
+		UserSender:      "Juan",
+		Msg:             "Hola",
+		UserDestination: "gary",
+	}*/
+
+	/*aa := models.Message{
+		Id:              1,
+		UserSender:      "Juan",
+		Msg:             "Hola",
+		UserDestination: "gary",
+	}
+
+	ab := models.Message{
+		Id:              1,
+		UserSender:      "Juan",
+		Msg:             "Hola",
+		UserDestination: "gary",
+	}
+
+	a := []models.Message{aa, ab}
+
+	err := redis.Set("key1", a, 30*time.Second)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	val, err := redis.Get("key1")
+
+	if err != nil {
+		fmt.Println("error", err.Error())
+	}
+
+	var ints []models.Message
+
+	err = json.Unmarshal([]byte(val.(string)), &ints)
+
+	fmt.Println("key: ", ints[0].Msg)*/
+
+	/*data := models.Message{}
+	json.Unmarshal([]byte(val.(string)), &data)
+
+	fmt.Println("key: ", data)*/
+
 	router := mux.NewRouter()
 
 	//routes

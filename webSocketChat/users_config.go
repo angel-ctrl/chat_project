@@ -101,12 +101,9 @@ func (u *Client) OnLine() {
 
 			sms := &models.Message{}
 
-			fmt.Println("Data: ", string(message))
-
 			if err := json.Unmarshal(message, sms); err != nil {
 				continue
 			} else {
-				log.Println(sms)
 				Ws.chanel.messageChanel <- sms
 			}
 		}
