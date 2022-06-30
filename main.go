@@ -27,7 +27,6 @@ func main() {
 	}
 
 	router.HandleFunc("/API/SendPublicKey", security.SendPublicKey).Methods("GET")
-	router.HandleFunc("/API/DescryptMessage", security.DescryptMessage).Methods("POST")
 
 	webSocketChat.NewHub()
 

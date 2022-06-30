@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	security "github.com/sql_chat/Security"
 	"github.com/sql_chat/Users"
 	"github.com/sql_chat/middlewares"
 	"github.com/sql_chat/models"
@@ -179,6 +180,8 @@ func (e *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var u models.Users
 
 	err := json.NewDecoder(r.Body).Decode(&u)
+
+	u.Password = security.DescryptMessage(u.Password)
 
 	if err != nil {
 		http.Error(w, "error en los datos recibidos: "+err.Error(), 400)

@@ -89,7 +89,7 @@ func (u *Client) verifyUserConecteds(friends []models.Users) []models.Users {
 
 		if userCnn, ok := Ws.clients[element.Username]; ok {
 
-			userCnn.Connection.WriteMessage(websocket.TextMessage, []byte("{{"+"uc:"+u.Username+"}}"))
+			userCnn.Connection.WriteMessage(websocket.BinaryMessage, []byte("{\""+"uc\":\"" + u.Username+"\"}")) 
 
 			var user models.Users
 			user.Id = element.Id
@@ -120,7 +120,7 @@ func (u *Client) OnLine() {
 
 	} else {
 
-		u.Connection.WriteMessage(websocket.TextMessage, data)
+		u.Connection.WriteMessage(websocket.BinaryMessage, data)
 
 	}
 
@@ -209,7 +209,7 @@ func (u *Client) DisconectUserOfFriends(friends []models.Users) {
 	for _, element := range friends {
 
 		if userCnn, ok := Ws.clients[element.Username]; ok {
-			userCnn.Connection.WriteMessage(websocket.TextMessage, []byte("{{"+"Disconected:"+u.Username+"}}"))
+			userCnn.Connection.WriteMessage(websocket.BinaryMessage, []byte("{\"" +"Disconected\":\""+u.Username+"\"}"))
 		}
 	}
 
@@ -220,7 +220,7 @@ func (u *Client) SendMessage(message *models.Message) error {
 	if data, err := json.Marshal(message); err != nil {
 		return err
 	} else {
-		err = u.Connection.WriteMessage(websocket.TextMessage, data)
+		err = u.Connection.WriteMessage(websocket.BinaryMessage, data)
 		log.Printf("Message send: from %s to %s", message.UserSender, message.UserDestination)
 		return err
 	}

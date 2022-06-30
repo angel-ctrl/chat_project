@@ -41,17 +41,9 @@ func SendPublicKey(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func DescryptMessage(w http.ResponseWriter, r *http.Request) {
+func DescryptMessage(passCrypted string) string {
 
-	type publicKeyR struct {
-		PublicKey string `json:"msg"`
-	}
-
-	var u publicKeyR
-
-	json.NewDecoder(r.Body).Decode(&u)
-
-	cipherText, _ := base64.StdEncoding.DecodeString(u.PublicKey)
+	cipherText, _ := base64.StdEncoding.DecodeString(passCrypted)
 
 	data, err := rsa.DecryptPKCS1v15(rand.Reader, PrivateKey, cipherText)
 
@@ -59,8 +51,6 @@ func DescryptMessage(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error: ", err)
 	}
 
-	fmt.Println(string(data))
-
-	w.WriteHeader(http.StatusCreated)
+	return string(data)
 
 }
