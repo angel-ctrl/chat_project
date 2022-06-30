@@ -252,7 +252,7 @@ func (e *UserHandler) LookFriends(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lst, err  := e.Allfuncs.LookFriends(id)
+	lst, err := e.Allfuncs.LookFriends(id)
 
 	if err != nil {
 		http.Error(w, "error borrando: "+err.Error(), 400)

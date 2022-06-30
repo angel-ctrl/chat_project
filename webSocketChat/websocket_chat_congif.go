@@ -74,6 +74,7 @@ func (w *Hub) HandlerWebSocket(rw http.ResponseWriter, r *http.Request) {
 
 	u := NewClient(str, strName, connection)
 	w.chanel.join <- u
+
 	u.OnLine()
 }
 

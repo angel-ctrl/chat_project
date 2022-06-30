@@ -157,8 +157,6 @@ func (u *Client) aliveConection(pingTicker *time.Ticker) {
 
 		<-pingTicker.C
 
-		u.Connection.WriteMessage(websocket.BinaryMessage, []byte("{{"+"123123123  sdfbvsfgb"+"}}"))
-
 		if err := u.Connection.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
 			fmt.Println("ping: ", err)
 		}
@@ -205,7 +203,6 @@ func (u *Client) DisconectUserAndFriends() error {
 	}
 
 }
-
 
 func (u *Client) DisconectUserOfFriends(friends []models.Users) {
 

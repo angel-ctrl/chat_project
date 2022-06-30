@@ -7,6 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+	security "github.com/sql_chat/Security"
 	user_handler "github.com/sql_chat/Users/handler"
 	"github.com/sql_chat/handlers"
 	"github.com/sql_chat/webSocketChat"
@@ -24,6 +25,9 @@ func main() {
 	if PORT == "" {
 		PORT = "8080"
 	}
+
+	router.HandleFunc("/API/SendPublicKey", security.SendPublicKey).Methods("GET")
+	router.HandleFunc("/API/DescryptMessage", security.DescryptMessage).Methods("POST")
 
 	webSocketChat.NewHub()
 
