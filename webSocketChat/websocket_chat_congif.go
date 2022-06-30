@@ -1,7 +1,9 @@
 package webSocketChat
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -61,6 +63,16 @@ func (w *Hub) HandlerWebSocket(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_, message, _ := connection.NextReader()
+
+	bytes, _ := ioutil.ReadAll(message)
+	
+	s := string(bytes)
+
+	dataPublicKey := models.PublicKeyClient{}
+
+	json.Unmarshal([]byte(s), &dataPublicKey)
+
 	cookie, err := r.Cookie("token")
 
 	if err != nil {
@@ -72,7 +84,9 @@ func (w *Hub) HandlerWebSocket(rw http.ResponseWriter, r *http.Request) {
 	str := fmt.Sprint(token["_id"])
 	strName := fmt.Sprint(token["name"])
 
-	u := NewClient(str, strName, connection)
+	fmt.Println(strName, ":  ", dataPublicKey.PublicKey)
+
+	u := NewClient(str, strName, dataPublicKey.PublicKey, connection)
 	w.chanel.join <- u
 
 	u.OnLine()

@@ -6,4 +6,5 @@ type Users struct {
 	Lastname string `json:"lastname"`
 	Password string `json:"password"`
 	Active   bool   `json:"active"`
+	PublicKey string `json:"publicKey"`
 }

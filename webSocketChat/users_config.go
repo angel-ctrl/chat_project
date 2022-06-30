@@ -25,13 +25,15 @@ type Client struct {
 	UserID     string
 	Username   string
 	Connection *websocket.Conn
+	PublicKey  string
 }
 
-func NewClient(id string, name string, conn *websocket.Conn) *Client {
+func NewClient(id string, name string, publicKey string, conn *websocket.Conn) *Client {
 	return &Client{
 		UserID:     id,
 		Username:   name,
 		Connection: conn,
+		PublicKey:  publicKey,
 	}
 }
 
@@ -85,15 +87,28 @@ func (u *Client) verifyUserConecteds(friends []models.Users) []models.Users {
 
 	var userConecteds []models.Users
 
+	var userc models.UserConected
+
+	userc.Username = u.Username
+	userc.PublicKey = u.PublicKey
+
+	fmt.Println(u.Username)
+	fmt.Println(u.PublicKey)
+
 	for _, element := range friends {
 
 		if userCnn, ok := Ws.clients[element.Username]; ok {
 
-			userCnn.Connection.WriteMessage(websocket.BinaryMessage, []byte("{\""+"uc\":\"" + u.Username+"\"}")) 
+			if data, err := json.Marshal(userc); err == nil {
+
+				userCnn.Connection.WriteMessage(websocket.BinaryMessage, data)
+
+			}
 
 			var user models.Users
 			user.Id = element.Id
 			user.Username = element.Username
+			user.PublicKey = userCnn.PublicKey
 			userConecteds = append(userConecteds, user)
 		}
 	}
@@ -209,7 +224,7 @@ func (u *Client) DisconectUserOfFriends(friends []models.Users) {
 	for _, element := range friends {
 
 		if userCnn, ok := Ws.clients[element.Username]; ok {
-			userCnn.Connection.WriteMessage(websocket.BinaryMessage, []byte("{\"" +"Disconected\":\""+u.Username+"\"}"))
+			userCnn.Connection.WriteMessage(websocket.BinaryMessage, []byte("{\""+"Disconected\":\""+u.Username+"\"}"))
 		}
 	}
 
@@ -221,7 +236,6 @@ func (u *Client) SendMessage(message *models.Message) error {
 		return err
 	} else {
 		err = u.Connection.WriteMessage(websocket.BinaryMessage, data)
-		log.Printf("Message send: from %s to %s", message.UserSender, message.UserDestination)
 		return err
 	}
 }
