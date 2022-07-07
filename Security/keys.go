@@ -45,22 +45,11 @@ func DescryptMessage(passCrypted string) string {
 
 	cipherText, _ := base64.StdEncoding.DecodeString(passCrypted)
 
-	derPkix, _ := x509.MarshalPKCS8PrivateKey(PrivateKey)
-
-	block := &pem.Block{
-		Type:  "RSA PRIVATE KEY",
-		Bytes: derPkix,
-	}
-
-	fmt.Println(string(pem.EncodeToMemory(block)))
-
 	data, err := DecryptOAEP(PrivateKey, cipherText)
 
 	if err != nil {
 		fmt.Println("Error: ", err)
 	}
-
-	fmt.Println("Decrypted: ", string(data))
 
 	return string(data)
 
@@ -70,7 +59,6 @@ func DecryptOAEP(private *rsa.PrivateKey, msg []byte) ([]byte, error) {
 
 	msgLen := len(msg)
 	step := private.PublicKey.Size()
-	fmt.Println("step: ", step)
 	var decryptedBytes []byte
 
 	for start := 0; start < msgLen; start += step {
