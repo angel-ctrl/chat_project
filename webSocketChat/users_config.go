@@ -18,7 +18,7 @@ const (
 
 	pingPeriod = (pongWait * 9) / 10
 
-	maxMessageSize = 512
+	maxMessageSize = 1048576
 )
 
 type Client struct {
@@ -90,10 +90,8 @@ func (u *Client) verifyUserConecteds(friends []models.Users) []models.Users {
 	var userc models.UserConected
 
 	userc.Username = u.Username
+	
 	userc.PublicKey = u.PublicKey
-
-	fmt.Println(u.Username)
-	fmt.Println(u.PublicKey)
 
 	for _, element := range friends {
 
@@ -216,7 +214,6 @@ func (u *Client) DisconectUserAndFriends() error {
 		return nil
 
 	}
-
 }
 
 func (u *Client) DisconectUserOfFriends(friends []models.Users) {

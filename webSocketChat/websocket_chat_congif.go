@@ -47,8 +47,8 @@ func check(r *http.Request) bool {
 }
 
 var upGradeWebSocket = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
+	ReadBufferSize:  1048576,
+	WriteBufferSize: 1048576,
 	CheckOrigin:     check,
 }
 
@@ -83,8 +83,6 @@ func (w *Hub) HandlerWebSocket(rw http.ResponseWriter, r *http.Request) {
 
 	str := fmt.Sprint(token["_id"])
 	strName := fmt.Sprint(token["name"])
-
-	fmt.Println(strName, ":  ", dataPublicKey.PublicKey)
 
 	u := NewClient(str, strName, dataPublicKey.PublicKey, connection)
 	w.chanel.join <- u
