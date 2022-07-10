@@ -72,8 +72,6 @@ func DecryptOAEP(private *rsa.PrivateKey, msg []byte) ([]byte, error) {
 			return nil, err
 		}
 
-		fmt.Println(string(msg[start:finish]))
-
 		decryptedBytes = append(decryptedBytes, decryptedBlockBytes...)
 	}
 

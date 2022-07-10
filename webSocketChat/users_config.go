@@ -18,7 +18,7 @@ const (
 
 	pingPeriod = (pongWait * 9) / 10
 
-	maxMessageSize = 1048576
+	maxMessageSize = 5242880
 )
 
 type Client struct {
