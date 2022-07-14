@@ -153,7 +153,7 @@ func (u *Client) OnLine() {
 			sms := &models.Message{}
 
 			if err := json.Unmarshal(message, sms); err != nil {
-				continue
+				fmt.Println("Error on unmarshal message: ", err.Error())
 			} else {
 				Ws.chanel.messageChanel <- sms
 			}

@@ -12,7 +12,7 @@ import (
 	"fmt"
 )
 
-var Bits int = 4096
+var Bits int = 5120
 
 var PrivateKey *rsa.PrivateKey = generateKeyPair(Bits)
 
@@ -60,6 +60,8 @@ func DecryptOAEP(private *rsa.PrivateKey, msg []byte) ([]byte, error) {
 	msgLen := len(msg)
 	step := private.PublicKey.Size()
 	var decryptedBytes []byte
+
+	fmt.Println(step)
 
 	for start := 0; start < msgLen; start += step {
 		finish := start + step
