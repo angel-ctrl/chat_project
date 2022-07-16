@@ -61,8 +61,6 @@ func DecryptOAEP(private *rsa.PrivateKey, msg []byte) ([]byte, error) {
 	step := private.PublicKey.Size()
 	var decryptedBytes []byte
 
-	fmt.Println(step)
-
 	for start := 0; start < msgLen; start += step {
 		finish := start + step
 		if finish > msgLen {
