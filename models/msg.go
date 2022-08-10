@@ -6,4 +6,5 @@ type Message struct {
 	Msg             string `json:"msg"`
 	UserDestination string `json:"userDestination"`
 	Key             string `json:"key"`
+	State           string `json:"state"`
 }

@@ -28,13 +28,12 @@ func main() {
 
 	router.HandleFunc("/API/SendPublicKey", security.SendPublicKey).Methods("GET")
 
-	webSocketChat.NewHub()
-
 	router.HandleFunc("/API/ws", webSocketChat.Ws.HandlerWebSocket).Methods("GET")
+	
 	go webSocketChat.Ws.UsersManager()
 
 	cor := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "http://25.12.136.60:3000", "http://127.0.0.1:8000"},
+		AllowedOrigins:   []string{"*"},
 		AllowedHeaders:   []string{"Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token", "Authorization", "Accept", "Accept-Language"},
 		AllowedMethods:   []string{"GET", "PATCH", "POST", "PUT", "OPTIONS", "DELETE", "COPY"},
 		Debug:            true,

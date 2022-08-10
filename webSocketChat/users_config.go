@@ -18,7 +18,7 @@ const (
 
 	pingPeriod = (pongWait * 9) / 10
 
-	maxMessageSize = 5242880
+	maxMessageSize = 2242880
 )
 
 type Client struct {
@@ -120,6 +120,7 @@ func (u *Client) OnLine() {
 	u.Connection.SetReadLimit(maxMessageSize)
 	u.Connection.SetReadDeadline(time.Now().Add(pongWait))
 	u.Connection.SetPongHandler(func(string) error { u.Connection.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	u.Connection.EnableWriteCompression(false)
 
 	lst := u.warnfriendsAndMe()
 

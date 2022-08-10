@@ -47,8 +47,8 @@ func check(r *http.Request) bool {
 }
 
 var upGradeWebSocket = websocket.Upgrader{
-	ReadBufferSize:  1048576,
-	WriteBufferSize: 1048576,
+	ReadBufferSize:  2242880,
+	WriteBufferSize: 2242880,
 	CheckOrigin:     check,
 }
 
