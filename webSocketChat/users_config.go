@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -26,6 +27,7 @@ type Client struct {
 	Username   string
 	Connection *websocket.Conn
 	PublicKey  string
+	mu         sync.Mutex
 }
 
 func NewClient(id string, name string, publicKey string, conn *websocket.Conn) *Client {
@@ -35,6 +37,29 @@ func NewClient(id string, name string, publicKey string, conn *websocket.Conn) *
 		Connection: conn,
 		PublicKey:  publicKey,
 	}
+}
+
+func (u *Client) sendMsgMutex(msg []byte, pingmsg int) error {
+    u.mu.Lock()
+    defer u.mu.Unlock()
+
+	if pingmsg == 0 {
+
+		err := u.Connection.WriteMessage(websocket.PingMessage, []byte{})
+		if err != nil {
+			return err
+		}
+
+	}else{
+
+		err := u.Connection.WriteMessage(websocket.BinaryMessage, msg)
+		if err != nil {
+			return err
+		}
+
+	}
+ 
+	return nil
 }
 
 func (u *Client) warnfriendsAndMe() []models.Users {
@@ -90,7 +115,7 @@ func (u *Client) verifyUserConecteds(friends []models.Users) []models.Users {
 	var userc models.UserConected
 
 	userc.Username = u.Username
-	
+
 	userc.PublicKey = u.PublicKey
 
 	for _, element := range friends {
@@ -99,7 +124,9 @@ func (u *Client) verifyUserConecteds(friends []models.Users) []models.Users {
 
 			if data, err := json.Marshal(userc); err == nil {
 
-				userCnn.Connection.WriteMessage(websocket.BinaryMessage, data)
+				userCnn.sendMsgMutex(data, 1)
+
+				//userCnn.Connection.WriteMessage(websocket.BinaryMessage, data)
 
 			}
 
@@ -134,7 +161,8 @@ func (u *Client) OnLine() {
 
 	} else {
 
-		u.Connection.WriteMessage(websocket.BinaryMessage, data)
+		//u.Connection.WriteMessage(websocket.BinaryMessage, data)
+		u.sendMsgMutex(data, 1)
 
 	}
 
@@ -171,7 +199,7 @@ func (u *Client) aliveConection(pingTicker *time.Ticker) {
 
 		<-pingTicker.C
 
-		if err := u.Connection.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
+		if err := u.sendMsgMutex([]byte{}, 0); err != nil {
 			fmt.Println("ping: ", err)
 		}
 
@@ -222,7 +250,8 @@ func (u *Client) DisconectUserOfFriends(friends []models.Users) {
 	for _, element := range friends {
 
 		if userCnn, ok := Ws.clients[element.Username]; ok {
-			userCnn.Connection.WriteMessage(websocket.BinaryMessage, []byte("{\""+"Disconected\":\""+u.Username+"\"}"))
+			userCnn.sendMsgMutex([]byte("{\""+"Disconected\":\""+u.Username+"\"}"), 1)
+			//userCnn.Connection.WriteMessage(websocket.BinaryMessage, []byte("{\""+"Disconected\":\""+u.Username+"\"}"))
 		}
 	}
 
@@ -233,7 +262,7 @@ func (u *Client) SendMessage(message *models.Message) error {
 	if data, err := json.Marshal(message); err != nil {
 		return err
 	} else {
-		err = u.Connection.WriteMessage(websocket.BinaryMessage, data)
+		err = u.sendMsgMutex(data, 1)
 		return err
 	}
 }
