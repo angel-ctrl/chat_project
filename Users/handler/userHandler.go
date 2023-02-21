@@ -25,6 +25,7 @@ func CreateUserHandler(router *mux.Router, userUseCase Users.UserUseCase) {
 	router.HandleFunc("/API/login/v1", userHandler.Login).Methods("POST")
 	router.HandleFunc("/API/addfriend/v1", middlewares.ValidoJWT(userHandler.AddFriendHD)).Methods("POST")
 	router.HandleFunc("/API/look_friend/v1", middlewares.ValidoJWT(userHandler.LookFriends)).Methods("GET")
+	router.HandleFunc("/API/SearshByNameUser/v1", middlewares.ValidoJWT(userHandler.LookFriendsByName)).Methods("GET")
 
 }
 
@@ -256,6 +257,24 @@ func (e *UserHandler) LookFriends(w http.ResponseWriter, r *http.Request) {
 	}
 
 	lst, err := e.Allfuncs.LookFriends(id)
+
+	if err != nil {
+		http.Error(w, "error borrando: "+err.Error(), 400)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+	json.NewEncoder(w).Encode(lst)
+
+}
+
+
+func (e *UserHandler) LookFriendsByName(w http.ResponseWriter, r *http.Request) {
+
+	Name := r.URL.Query().Get("Name")
+
+	lst, err := e.Allfuncs.GetUserName(Name)
 
 	if err != nil {
 		http.Error(w, "error borrando: "+err.Error(), 400)

@@ -14,4 +14,5 @@ type UserUseCase interface {
 	LoginUserCase(pass string, user models.Users) error
 	AddFriend(models.Friends) error
 	LookFriends(id int) ([]models.Users, error)
+	GetUserName(name string) (models.Users, error)
 }

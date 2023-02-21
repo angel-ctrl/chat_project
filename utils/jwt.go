@@ -14,7 +14,7 @@ func GeneroJWT(t models.Users) (string, error){
 	payload := jwt.MapClaims{
 		"name": t.Username,
 		"_id": t.Id,
-		"exp": time.Now().Add(time.Minute * 60).Unix(), //unix hace que devuelva la vaina con formato long y es muy rapido
+		"exp": time.Now().Add(time.Minute * 480).Unix(), //unix hace que devuelva la vaina con formato long y es muy rapido
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)

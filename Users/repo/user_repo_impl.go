@@ -162,3 +162,17 @@ func (e *UserRepoImpl) LookFriends_repo(id int) ([]models.Users, error) {
 	return list, nil
 
 }
+
+func (e *UserRepoImpl) GetUserName_repo(name string) (models.Users, error) {
+
+	var user models.Users
+
+	query := "SELECT * FROM usuarios WHERE username = $1;"
+
+	if err := e.DB.QueryRow(query, name).Scan(&user.Id, &user.Username, &user.Lastname, &user.Password, &user.Active); err != nil {
+		return user, errors.New(err.Error())
+	}
+
+	return user, nil
+
+}

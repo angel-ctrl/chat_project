@@ -13,4 +13,5 @@ type UserRepo interface {
 	DeleteUser_repo(id int) error
 	AddFriend_repo(models.Friends) error
 	LookFriends_repo(id int) ([]models.Users, error)
+	GetUserName_repo(name string) (models.Users, error)
 }

@@ -62,3 +62,7 @@ func (e *UserUseCaseImpl) AddFriend(u models.Friends) error {
 func (e *UserUseCaseImpl) LookFriends(id int) ([]models.Users, error) {
 	return e.user.LookFriends_repo(id)
 }
+
+func (e *UserUseCaseImpl) GetUserName(name string) (models.Users, error) {
+	return e.user.GetUserName_repo(name)
+}

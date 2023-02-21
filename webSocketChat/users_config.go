@@ -15,11 +15,11 @@ import (
 )
 
 const (
-	pongWait = 5 * time.Second
+	pongWait = 120 * time.Second
 
 	pingPeriod = (pongWait * 9) / 10
 
-	maxMessageSize = 2242880
+	maxMessageSize = 22428800
 )
 
 type Client struct {
@@ -146,7 +146,7 @@ func (u *Client) OnLine() {
 
 	u.Connection.SetReadLimit(maxMessageSize)
 	u.Connection.SetReadDeadline(time.Now().Add(pongWait))
-	u.Connection.SetPongHandler(func(string) error { u.Connection.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	u.Connection.SetPongHandler(func(string) error {; u.Connection.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	u.Connection.EnableWriteCompression(false)
 
 	lst := u.warnfriendsAndMe()
@@ -161,7 +161,6 @@ func (u *Client) OnLine() {
 
 	} else {
 
-		//u.Connection.WriteMessage(websocket.BinaryMessage, data)
 		u.sendMsgMutex(data, 1)
 
 	}
@@ -178,6 +177,10 @@ func (u *Client) OnLine() {
 			break
 
 		} else {
+
+			u.mu.Lock()
+			u.Connection.SetReadDeadline(time.Now().Add(pongWait))
+			u.mu.Unlock()
 
 			sms := &models.Message{}
 
@@ -198,7 +201,7 @@ func (u *Client) aliveConection(pingTicker *time.Ticker) {
 	for {
 
 		<-pingTicker.C
-
+		//fmt.Println("send ping from server")
 		if err := u.sendMsgMutex([]byte{}, 0); err != nil {
 			fmt.Println("ping: ", err)
 		}
@@ -206,6 +209,8 @@ func (u *Client) aliveConection(pingTicker *time.Ticker) {
 	}
 
 }
+
+
 
 func (u *Client) DisconectUserAndFriends() error {
 

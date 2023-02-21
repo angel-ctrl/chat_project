@@ -47,8 +47,8 @@ func check(r *http.Request) bool {
 }
 
 var upGradeWebSocket = websocket.Upgrader{
-	ReadBufferSize:  2242880,
-	WriteBufferSize: 2242880,
+	ReadBufferSize:  22428800,
+	WriteBufferSize: 22428800,
 	CheckOrigin:     check,
 }
 
@@ -73,13 +73,17 @@ func (w *Hub) HandlerWebSocket(rw http.ResponseWriter, r *http.Request) {
 
 	json.Unmarshal([]byte(s), &dataPublicKey)
 
-	cookie, err := r.Cookie("token")
+	params := r.URL.Query()
+	tokenJ := params.Get("token")
+
+	//cookie, err := r.Cookie("token")
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	token, _ := utils.ExtractClaims(cookie.Value)
+
+	token, _ := utils.ExtractClaims(tokenJ) //cookie.Value
 
 	str := fmt.Sprint(token["_id"])
 	strName := fmt.Sprint(token["name"])
